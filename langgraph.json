@@ -1,0 +1,13 @@
+{
+  "dependencies": ["."],
+  "cors": {
+    "allow_origins": ["https://smith.langchain.com"],
+    "allow_credentials": true,
+    "allow_methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    "allow_headers": ["Content-Type", "Authorization"]
+  },
+  "graphs": {
+    "retrieval_graph": "./src/retrieval_graph/graph.py:graph"
+  },
+  "env": ".env"
+}
