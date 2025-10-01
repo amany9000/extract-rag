@@ -41,7 +41,7 @@ def make_qdrant_retriever(
 
     vector_store = Qdrant.from_existing_collection(
         embedding=embedding_model,
-        collection_name='extrag-rag.default',
+        collection_name=os.environ["QDRANT_COL"],
         path=os.environ["QDRANT_DIR"],
     )
 

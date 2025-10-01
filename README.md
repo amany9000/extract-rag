@@ -159,28 +159,15 @@ MONGODB_URI="mongodb+srv://username:password@your-cluster-url.mongodb.net/?retry
 ```
 
 Replace `username`, `password`, `your-cluster-url`, and `your-cluster-name` with your actual credentials and cluster information.
-#### Pinecone Serverless
+#### Qdrant
 
-Pinecone is a managed, cloud-native vector database that provides long-term memory for high-performance AI applications.
-
-1. Sign up for a Pinecone account at [https://login.pinecone.io/login](https://login.pinecone.io/login) if you haven't already.
-
-2. After logging in, generate an API key from the Pinecone console.
-
-3. Create a serverless index:
-   - Choose a name for your index (e.g., "example-index")
-   - Set the dimension based on your embedding model (e.g., 1536 for OpenAI embeddings)
-   - Select "cosine" as the metric
-   - Choose "Serverless" as the index type
-   - Select your preferred cloud provider and region (e.g., AWS us-east-1)
-
-4. Once you have created your index and obtained your API key, add them to your `.env` file:
-
+Qdrant is a fast vectordb. It has an extensive support for metadata filtering.
+To start a docker container for Qdrant run:
 ```
-PINECONE_API_KEY=your-api-key
-PINECONE_INDEX_NAME=your-index-name
+docker run -p 6333:6333 -p 6334:6334 \
+  -v $(pwd)/qdrant_storage:/qdrant/storage:z \
+  qdrant/qdrant
 ```
-
 
 ### Setup Model
 

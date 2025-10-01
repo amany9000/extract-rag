@@ -8,10 +8,9 @@ from langchain_qdrant import Qdrant
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.embeddings.fastembed import FastEmbedEmbeddings
 
-
 def process_docs(data_dir: str, db_dir: str, db_col: str):
     
-    embeddings = FastEmbedEmbeddings(model_name="BAAI/bge-base-en-v1.5")
+    embeddings = FastEmbedEmbeddings(model_name="bge-small-en-v1.5", threads=4)
     semantic_splitter = SemanticChunker(
         embeddings, breakpoint_threshold_type="interquartile"
     )
@@ -33,8 +32,9 @@ def process_docs(data_dir: str, db_dir: str, db_col: str):
     Qdrant.from_documents(
         documents=documents,
         embedding=embeddings,
-        path=db_dir,
+        url="http://localhost:6333",
         collection_name=db_col,
+        force_recreate=True
     )
             
 

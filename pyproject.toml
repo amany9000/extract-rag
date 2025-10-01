@@ -1,5 +1,5 @@
 [project]
-name = "rag-research-graph"
+name = "extract_rag"
 version = "0.0.1"
 description = "Starter template for making a custom RAG research agent graph in LangGraph."
 authors = [
@@ -20,6 +20,9 @@ dependencies = [
     "langchain-qdrant>=1.0.0",
     "langgraph-cli>=0.4.7",
     "langgraph-api>=0.5.25",
+    "langchain-experimental>=0.4.0",
+    "fastembed>=0.7.3",
+    "qdrant-client==1.15.1",
 ]
 
 [project.optional-dependencies]
@@ -30,12 +33,10 @@ requires = ["setuptools>=73.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-packages = ["retrieval_graph", "index_graph", "shared"]
+packages = ["retrieval_graph", "shared"]
 [tool.setuptools.package-dir]
 "langgraph.templates.retrieval_graph" = "src/retrieval_graph"
-"langgraph.templates.index_graph" = "src/index_graph"
 "retrieval_graph" = "src/retrieval_graph"
-"index_graph" = "src/index_graph"
 "shared" = "src/shared"
 
 
