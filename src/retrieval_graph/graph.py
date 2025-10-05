@@ -46,25 +46,23 @@ async def analyze_and_route_query(
 
 def route_query(
     state: AgentState,
-) -> Literal["create_research_plan", "ask_for_more_info", "respond_to_general_query"]:
+) -> Literal["create_research_plan", "ask_for_more_info"]:
     """Determine the next step based on the query classification.
 
     Args:
         state (AgentState): The current state of the agent, including the router's classification.
 
     Returns:
-        Literal["create_research_plan", "ask_for_more_info", "respond_to_general_query"]: The next step to take.
+        Literal["create_research_plan", "ask_for_more_info"]: The next step to take.
 
     Raises:
         ValueError: If an unknown router type is encountered.
     """
     _type = state.router["type"]
-    if _type == "langchain":
+    if _type == "news-media":
         return "create_research_plan"
     elif _type == "more-info":
         return "ask_for_more_info"
-    elif _type == "general":
-        return "respond_to_general_query"
     else:
         raise ValueError(f"Unknown router type {_type}")
 
@@ -93,34 +91,10 @@ async def ask_for_more_info(
     return {"messages": [response]}
 
 
-async def respond_to_general_query(
-    state: AgentState, *, config: RunnableConfig
-) -> dict[str, list[BaseMessage]]:
-    """Generate a response to a general query not related to LangChain.
-
-    This node is called when the router classifies the query as a general question.
-
-    Args:
-        state (AgentState): The current state of the agent, including conversation history and router logic.
-        config (RunnableConfig): Configuration with the model used to respond.
-
-    Returns:
-        dict[str, list[str]]: A dictionary with a 'messages' key containing the generated response.
-    """
-    configuration = AgentConfiguration.from_runnable_config(config)
-    model = load_chat_model(configuration.query_model)
-    system_prompt = configuration.general_system_prompt.format(
-        logic=state.router["logic"]
-    )
-    messages = [{"role": "system", "content": system_prompt}] + state.messages
-    response = await model.ainvoke(messages)
-    return {"messages": [response]}
-
-
 async def create_research_plan(
     state: AgentState, *, config: RunnableConfig
 ) -> dict[str, list[str] | str]:
-    """Create a step-by-step research plan for answering a LangChain-related query.
+    """Create a step-by-step research plan for answering a news-media query.
 
     Args:
         state (AgentState): The current state of the agent, including conversation history.
@@ -210,7 +184,6 @@ async def respond(
 builder = StateGraph(AgentState, input=InputState, config_schema=AgentConfiguration)
 builder.add_node(analyze_and_route_query)
 builder.add_node(ask_for_more_info)
-builder.add_node(respond_to_general_query)
 builder.add_node(conduct_research)
 builder.add_node(create_research_plan)
 builder.add_node(respond)
@@ -220,7 +193,6 @@ builder.add_conditional_edges("analyze_and_route_query", route_query)
 builder.add_edge("create_research_plan", "conduct_research")
 builder.add_conditional_edges("conduct_research", check_finished)
 builder.add_edge("ask_for_more_info", END)
-builder.add_edge("respond_to_general_query", END)
 builder.add_edge("respond", END)
 
 # Compile into a graph object that you can invoke and deploy.

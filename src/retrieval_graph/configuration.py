@@ -45,13 +45,6 @@ class AgentConfiguration(BaseConfiguration):
         },
     )
 
-    general_system_prompt: str = field(
-        default=prompts.GENERAL_SYSTEM_PROMPT,
-        metadata={
-            "description": "The system prompt used for responding to general questions."
-        },
-    )
-
     research_plan_system_prompt: str = field(
         default=prompts.RESEARCH_PLAN_SYSTEM_PROMPT,
         metadata={

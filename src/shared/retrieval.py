@@ -24,7 +24,7 @@ def make_text_encoder(model: str) -> Embeddings:
         case "fastembed":
             from langchain_community.embeddings.fastembed import FastEmbedEmbeddings
 
-            return FastEmbedEmbeddings(model_name="BAAI/bge-base-en-v1.5")
+            return FastEmbedEmbeddings(model_name="BAAI/bge-small-en-v1.5", threads=4)
         case _:
             raise ValueError(f"Unsupported embedding provider: {provider}")
 
@@ -42,7 +42,7 @@ def make_qdrant_retriever(
     vector_store = Qdrant.from_existing_collection(
         embedding=embedding_model,
         collection_name=os.environ["QDRANT_COL"],
-        path=os.environ["QDRANT_DIR"],
+        url="http://localhost:6333",
     )
 
     yield vector_store.as_retriever(

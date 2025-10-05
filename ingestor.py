@@ -9,8 +9,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.embeddings.fastembed import FastEmbedEmbeddings
 
 def process_docs(data_dir: str, db_dir: str, db_col: str):
-    
-    embeddings = FastEmbedEmbeddings(model_name="bge-small-en-v1.5", threads=4)
+    embeddings = FastEmbedEmbeddings(model_name="BAAI/bge-small-en-v1.5", threads=4)
     semantic_splitter = SemanticChunker(
         embeddings, breakpoint_threshold_type="interquartile"
     )
@@ -24,11 +23,11 @@ def process_docs(data_dir: str, db_dir: str, db_col: str):
     documents = []
     for file in p.iterdir(): 
         if file.is_file():
-            print("File being processed: ", file.name, file.read_text())
             documents.extend(
-                recursive_splitter.create_documents(file.read_text())
+                recursive_splitter.create_documents([file.read_text()])
             )
-    print("Chunking done")
+    print("Chunking done", documents)
+
     Qdrant.from_documents(
         documents=documents,
         embedding=embeddings,
@@ -36,7 +35,7 @@ def process_docs(data_dir: str, db_dir: str, db_col: str):
         collection_name=db_col,
         force_recreate=True
     )
-            
+
 
 
 data_dir = os.getenv("DATA_DIR") or "./docs"

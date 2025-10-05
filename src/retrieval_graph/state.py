@@ -62,7 +62,7 @@ class Router(TypedDict):
     """Classify user query."""
 
     logic: str
-    type: Literal["more-info", "langchain", "general"]
+    type: Literal["more-info", "news-media"]
 
 
 # This is the primary state of your agent, where you can store any information
@@ -72,7 +72,7 @@ class Router(TypedDict):
 class AgentState(InputState):
     """State of the retrieval graph / agent."""
 
-    router: Router = field(default_factory=lambda: Router(type="general", logic=""))
+    router: Router = field(default_factory=lambda: Router(type="news-media", logic=""))
     """The router's classification of the user's query."""
     steps: list[str] = field(default_factory=list)
     """A list of steps in the research plan."""
