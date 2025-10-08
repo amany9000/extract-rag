@@ -45,13 +45,6 @@ class AgentConfiguration(BaseConfiguration):
         },
     )
 
-    research_plan_system_prompt: str = field(
-        default=prompts.RESEARCH_PLAN_SYSTEM_PROMPT,
-        metadata={
-            "description": "The system prompt used for generating a research plan based on the user's question."
-        },
-    )
-
     generate_queries_system_prompt: str = field(
         default=prompts.GENERATE_QUERIES_SYSTEM_PROMPT,
         metadata={
