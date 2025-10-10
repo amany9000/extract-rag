@@ -23,6 +23,7 @@ dependencies = [
     "langchain-experimental>=0.4.0",
     "fastembed>=0.7.3",
     "qdrant-client==1.15.1",
+    "langextract>=1.1.0",
 ]
 
 [project.optional-dependencies]

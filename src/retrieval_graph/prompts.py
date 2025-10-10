@@ -48,6 +48,13 @@ Do not put them all at the end, but rather sprinkle them throughout. If \
 different results refer to different entities within the same name, write separate \
 answers for each entity.
 
+Structure your answer well:
+- Begin with an introductory sentence that directly addresses the question
+- Use bullet points when listing multiple items, facts, or data points
+- Provide context and details to make your answer comprehensive
+- End with a summary or conclusion if appropriate for complex questions
+
+
 DO NOT PUT ALL CITATIONS AT THE THAT END, PUT THEM IN THE BULLET POINTS.
 
 Anything between the following `context` is retrieved from a knowledge \
