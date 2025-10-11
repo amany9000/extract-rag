@@ -17,7 +17,8 @@ def extract_with_langextract(documents: List[Document]) -> List[Document]:
     prompt = textwrap.dedent("""\
         Extract label of the text. The 8 possible labels are: Macroeconomics, 
         Government-Work, Currencies, Energy, Commodities, Agriculture, Livestock and 
-        Corporate-Finance. Do not create new labels. Use exact text for extractions.""")
+        Corporate-Finance. Use exact text for extractions. Do not create new labels.
+        Choose exactly one label from the list above per extraction object.""")
 
     examples = [
         lx.data.ExampleData(
@@ -108,7 +109,11 @@ def extract_with_langextract(documents: List[Document]) -> List[Document]:
                 ),
                 lx.data.Extraction(
                     extraction_class="labels",
-                    extraction_text="Commodities",
+                    extraction_text="Government-Work",
+                ),
+                lx.data.Extraction(
+                    extraction_class="labels",
+                    extraction_text="Currencies",
                 ),
             ]
         ),
@@ -142,11 +147,18 @@ def extract_with_langextract(documents: List[Document]) -> List[Document]:
                 ),
                 lx.data.Extraction(
                     extraction_class="labels",
+                    extraction_text="Government-Work",
+                ),
+                lx.data.Extraction(
+                    extraction_class="labels",
                     extraction_text="Livestock",
                 ),
             ]
         )
     ]
+
+    seen = set()
+    all_labels = []
 
     for document in documents:
         result = lx.extract(
@@ -161,6 +173,13 @@ def extract_with_langextract(documents: List[Document]) -> List[Document]:
         print("labels", labels)
         document.metadata["filter"] = labels
         print("Document After", document)
+        
+        for x in labels:
+            if x not in seen:
+                seen.add(x)
+                all_labels.append(x)
+    
+    print("results", result)  
     return documents
     
 
