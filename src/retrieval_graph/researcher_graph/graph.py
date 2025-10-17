@@ -12,7 +12,7 @@ from langgraph.graph import END, START, StateGraph
 from langgraph.types import Send
 
 from retrieval_graph.configuration import AgentConfiguration
-from retrieval_graph.researcher_graph.state import QueryState, ResearcherState
+from retrieval_graph.researcher_graph.state import Query, QueryState, ResearcherState
 from shared import retrieval
 from shared.utils import load_chat_model
 
@@ -33,7 +33,7 @@ async def generate_queries(
     """
 
     class Response(TypedDict):
-        queries: list[str]
+        queries: list[Query]
 
     configuration = AgentConfiguration.from_runnable_config(config)
     model = load_chat_model(configuration.query_model).with_structured_output(Response)
@@ -59,8 +59,9 @@ async def retrieve_documents(
     Returns:
         dict[str, list[Document]]: A dictionary with a 'documents' key containing the list of retrieved documents.
     """
-    with retrieval.make_retriever(config) as retriever:
-        response = await retriever.ainvoke(state.query, config)
+    with retrieval.make_retriever(state.query['filters'], config) as retriever:
+        response = await retriever.ainvoke(state.query['text'], config)
+        print("state.query retrieve_documents", state.query, "\n", "response", response, "\n")
         return {"documents": response}
 
 
