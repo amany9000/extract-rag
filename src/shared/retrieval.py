@@ -6,7 +6,7 @@ vector store backends, specifically Qdrant and MongoDB.
 
 import os
 from contextlib import contextmanager
-from typing import Generator
+from typing import Generator, List
 
 from langchain_core.embeddings import Embeddings
 from langchain_core.runnables import RunnableConfig
@@ -34,10 +34,13 @@ def make_text_encoder(model: str) -> Embeddings:
 
 @contextmanager
 def make_qdrant_retriever(
-    configuration: BaseConfiguration, embedding_model: Embeddings
+    configuration: BaseConfiguration,
+    embedding_model: Embeddings,
+    filters: List[str] | None
 ) -> Generator[VectorStoreRetriever, None, None]:
     """Configure this agent to connect to a specific qdrant store"""
     from langchain_qdrant import Qdrant
+    from qdrant_client.models import Filter, FieldCondition, MatchValue
 
     vector_store = Qdrant.from_existing_collection(
         embedding=embedding_model,
@@ -45,9 +48,23 @@ def make_qdrant_retriever(
         url="http://localhost:6333",
     )
 
-    yield vector_store.as_retriever(
-        search_type="similarity", search_kwargs={"k": 5}
-    )
+    if filters:
+        yield vector_store.as_retriever(
+            search_type="similarity", search_kwargs={"k": 5}
+        )
+    else:
+        yield vector_store.as_retriever(
+            search_type="similarity",
+            search_kwargs={
+                "k": 6,
+                "filter": Filter(
+                    must=[
+                        FieldCondition(key="metadata.filter", match=MatchValue(value=v))
+                        for v in filters
+                    ]
+                )
+            }
+        )
 
 
 @contextmanager
@@ -67,6 +84,7 @@ def make_mongodb_retriever(
 
 @contextmanager
 def make_retriever(
+    filters: List[str] | None, 
     config: RunnableConfig,
 ) -> Generator[VectorStoreRetriever, None, None]:
     """Create a retriever for the agent, based on the current configuration."""
@@ -74,7 +92,7 @@ def make_retriever(
     embedding_model = make_text_encoder(configuration.embedding_model)
     match configuration.retriever_provider:
         case "qdrant":
-            with make_qdrant_retriever(configuration, embedding_model) as retriever:
+            with make_qdrant_retriever(configuration, embedding_model, filters) as retriever:
                 yield retriever
 
         case "mongodb":

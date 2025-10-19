@@ -107,8 +107,8 @@ async def conduct_research(state: AgentState) -> dict[str, Any]:
         - Invokes the researcher_graph with the first step of the research plan.
         - Updates the state with the retrieved documents and removes the completed step.
     """
-    print("conduct_research_state.messages", state.messages)
     result = await researcher_graph.ainvoke({"question": state.messages[-1].content})
+    print("conduct_research.result['documents']", result["documents"], len(result["documents"]))
     return {"documents": result["documents"]}
 
 
@@ -129,6 +129,7 @@ async def respond(
     configuration = AgentConfiguration.from_runnable_config(config)
     model = load_chat_model(configuration.response_model)
     context = format_docs(state.documents)
+    print("respond.context", context, "\n")
     prompt = configuration.response_system_prompt.format(context=context)
     messages = [{"role": "system", "content": prompt}] + state.messages
     response = await model.ainvoke(messages)

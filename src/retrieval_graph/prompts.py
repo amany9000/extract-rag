@@ -37,16 +37,10 @@ the information from the provided search results below.
 
 Generate a comprehensive and informative answer for the \
 given question based solely on the provided search results (URL and content). \
-Do NOT ramble, and adjust your response length based on the question. If they ask \
-a question that can be answered in one sentence, do that. If 5 paragraphs of detail is needed, \
-do that. You must \
-only use information from the provided search results. Combine search results together into a coherent answer. Do not \
+You must only use information from the provided search results. Combine search results together into a coherent answer. Do not \
 repeat text. Cite search results using [${{number}}] notation. Only cite the most \
 relevant results that answer the question accurately. Place these citations at the end \
-of the individual sentence or paragraph that reference them. \
-Do not put them all at the end, but rather sprinkle them throughout. If \
-different results refer to different entities within the same name, write separate \
-answers for each entity.
+of the individual sentence or paragraph that reference them.
 
 Structure your answer well:
 - Begin with an introductory sentence that directly addresses the question
@@ -66,7 +60,25 @@ bank, not part of the conversation with the user.
 
 # Researcher graph
 
-GENERATE_QUERIES_SYSTEM_PROMPT = """\
-Generate 3 search queries to search for to answer the user's question. \
-These search queries should be diverse in nature - do not generate \
-repetitive ones."""
+GENERATE_QUERIES_SYSTEM_PROMPT = GENERATE_QUERIES_SYSTEM_PROMPT = """\
+Generate 3 diverse search queries to answer the user's question. \
+For each query, assign ALL applicable labels that match the query's topic.
+
+Available labels:
+1. Macroeconomics
+2. Government-Work
+3. Currencies
+4. Energy
+5. Commodities
+6. Agriculture
+7. Livestock
+8. Corporate-Finance
+
+IMPORTANT: 
+- A single query can have MULTIPLE labels if it covers multiple topics
+- Example: "U.K. MONEY MARKET SHORTAGE FORECAST AT 250 MLN STERLING" would have labels: ["Macroeconomics", "Currencies"]
+- Example: "SENSORMATIC INC UPS STAKE IN CHECKROBOT LTD" would have labels: ["Corporate-Finance", "Currencies"]
+- If no labels apply to a query, use an empty array
+- Make queries diverse - avoid repetition. Try to shuffle labels as much as possible.
+
+Return each query with its text and an array of all matching labels."""

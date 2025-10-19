@@ -67,11 +67,11 @@ filtered_retriever = qdrant.as_retriever(
     search_kwargs={
         "k": 6,
         "filter": Filter(
-        must=[
-            FieldCondition(key="metadata.filter", match=MatchValue(value=v))
-            for v in filter_val
-        ]
-    )
+            must=[
+                FieldCondition(key="metadata.filter", match=MatchValue(value=v))
+                for v in filter_val
+            ]
+        )
     }
 )
 
