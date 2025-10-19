@@ -50,13 +50,13 @@ def make_qdrant_retriever(
 
     if filters:
         yield vector_store.as_retriever(
-            search_type="similarity", search_kwargs={"k": 5}
+            search_type="similarity", search_kwargs={"k": 4}
         )
     else:
         yield vector_store.as_retriever(
             search_type="similarity",
             search_kwargs={
-                "k": 6,
+                "k": 4,
                 "filter": Filter(
                     must=[
                         FieldCondition(key="metadata.filter", match=MatchValue(value=v))
