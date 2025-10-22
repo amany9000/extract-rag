@@ -1,7 +1,7 @@
 """Manage the configuration of various retrievers.
 
 This module provides functionality to create and manage retrievers for different
-vector store backends, specifically Qdrant and MongoDB.
+vector store backends, specifically Qdrant.
 """
 
 import os
@@ -66,22 +66,6 @@ def make_qdrant_retriever(
             }
         )
 
-
-@contextmanager
-def make_mongodb_retriever(
-    configuration: BaseConfiguration, embedding_model: Embeddings
-) -> Generator[VectorStoreRetriever, None, None]:
-    """Configure this agent to connect to a specific MongoDB Atlas index & namespaces."""
-    from langchain_mongodb.vectorstores import MongoDBAtlasVectorSearch
-
-    vstore = MongoDBAtlasVectorSearch.from_connection_string(
-        os.environ["MONGODB_URI"],
-        namespace="extrag-rag.default",
-        embedding=embedding_model,
-    )
-    yield vstore.as_retriever(search_kwargs=configuration.search_kwargs)
-
-
 @contextmanager
 def make_retriever(
     filters: List[str] | None, 
@@ -93,10 +77,6 @@ def make_retriever(
     match configuration.retriever_provider:
         case "qdrant":
             with make_qdrant_retriever(configuration, embedding_model, filters) as retriever:
-                yield retriever
-
-        case "mongodb":
-            with make_mongodb_retriever(configuration, embedding_model) as retriever:
                 yield retriever
 
         case _:

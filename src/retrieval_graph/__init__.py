@@ -17,7 +17,7 @@ allowing for flexibility in model selection, retrieval methods, and system promp
 Key Features:
 - Intelligent query classification and routing
 - Multi-step research planning for complex queries
-- Integration with various retrieval providers (e.g., Qdrant, MongoDB)
+- Integration with various retrieval providers (e.g., Qdrant)
 - Customizable language models for query analysis, research planning, and response generation
 - Stateful conversation management for context-aware interactions
 

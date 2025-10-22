@@ -27,12 +27,12 @@ class BaseConfiguration:
     )
 
     retriever_provider: Annotated[
-        Literal["qdrant", "mongodb"],
+        Literal["qdrant"],
         {"__template_metadata__": {"kind": "retriever"}},
     ] = field(
         default="qdrant",
         metadata={
-            "description": "The vector store provider to use for retrieval. Options are 'qdrant', or 'mongodb'."
+            "description": "The vector store provider to use for retrieval. Options are 'qdrant'."
         },
     )
 
