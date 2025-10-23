@@ -23,8 +23,11 @@ def make_text_encoder(model: str) -> Embeddings:
     match provider:
         case "fastembed":
             from langchain_community.embeddings.fastembed import FastEmbedEmbeddings
-
-            return FastEmbedEmbeddings(model_name="BAAI/bge-small-en-v1.5", threads=4)
+            
+            embedding = os.getenv("EMBEDDING_MODEL")
+            if not embedding:
+                raise ValueError(f"EMBEDDING_MODEL env var not provided")
+            return FastEmbedEmbeddings(model_name=embedding, threads=4)
         case _:
             raise ValueError(f"Unsupported embedding provider: {provider}")
 
@@ -42,10 +45,18 @@ def make_qdrant_retriever(
     from langchain_qdrant import Qdrant
     from qdrant_client.models import Filter, FieldCondition, MatchValue
 
+    collection = os.getenv("QDRANT_COL")
+    if not collection:
+        raise ValueError(f"QDRANT_COL env var for Qdrant DB Collection not provided")
+
+    url = os.getenv("QDRANT_URL")
+    if not url:
+        raise ValueError(f"QDRANT_URL env var for Qdrant DB URL not provided")
+
     vector_store = Qdrant.from_existing_collection(
         embedding=embedding_model,
-        collection_name=os.environ["QDRANT_COL"],
-        url="http://localhost:6333",
+        collection_name=collection,
+        url=url
     )
 
     if filters:

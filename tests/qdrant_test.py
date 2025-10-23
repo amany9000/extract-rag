@@ -7,7 +7,7 @@ from langchain_qdrant import Qdrant
 from langchain_community.embeddings.fastembed import FastEmbedEmbeddings
 from gliner2 import GLiNER2
 
-embedding_model = FastEmbedEmbeddings(model_name="BAAI/bge-small-en-v1.5", threads=4)
+embedding_model = FastEmbedEmbeddings(model_name=os.getenv("EMBEDDING_MODEL"), threads=4)
 
 client = QdrantClient(url="http://localhost:6333")
 collection = os.getenv("QDRANT_COL") or "extract-rag.default"

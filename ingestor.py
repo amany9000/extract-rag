@@ -55,8 +55,8 @@ def extract_with_gliner(documents: List[Document]) -> List[Document]:
     return documents
 
 
-def process_docs(data_dir: str, db_dir: str, db_col: str):
-    embeddings = FastEmbedEmbeddings(model_name="BAAI/bge-small-en-v1.5", threads=4)
+def process_docs(data_dir: str, db_url: str, db_col: str):
+    embeddings = FastEmbedEmbeddings(model_name=os.getenv("EMBEDDING_MODEL"), threads=4)
     recursive_splitter = RecursiveCharacterTextSplitter(
         chunk_size=2048,
         chunk_overlap=128,
@@ -78,12 +78,13 @@ def process_docs(data_dir: str, db_dir: str, db_col: str):
     Qdrant.from_documents(
         documents=documents,
         embedding=embeddings,
-        url="http://localhost:6333",
+        url=db_url,
         collection_name=db_col,
         force_recreate=True
     )
 
+
 data_dir = os.getenv("DATA_DIR") or "./docs"
-db_dir = os.getenv("QDRANT_DIR") or "./db_docs"
+db_url = os.getenv("QDRANT_URL") or "http://localhost:6333"
 db_col = os.getenv("QDRANT_COL") or "extract-rag.default"
-process_docs(data_dir, db_dir, db_col)
+process_docs(data_dir, db_url, db_col)
