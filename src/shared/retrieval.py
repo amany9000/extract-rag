@@ -37,7 +37,6 @@ def make_text_encoder(model: str) -> Embeddings:
 
 @contextmanager
 def make_qdrant_retriever(
-    configuration: BaseConfiguration,
     embedding_model: Embeddings,
     filters: List[str] | None
 ) -> Generator[VectorStoreRetriever, None, None]:
@@ -87,7 +86,7 @@ def make_retriever(
     embedding_model = make_text_encoder(configuration.embedding_model)
     match configuration.retriever_provider:
         case "qdrant":
-            with make_qdrant_retriever(configuration, embedding_model, filters) as retriever:
+            with make_qdrant_retriever(embedding_model, filters) as retriever:
                 yield retriever
 
         case _:

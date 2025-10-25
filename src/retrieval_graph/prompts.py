@@ -28,19 +28,12 @@ DO NOT PUT ALL CITATIONS AT THE THAT END, PUT THEM IN THE BULLET POINTS.
 
 # Researcher graph
 
-GENERATE_QUERIES_SYSTEM_PROMPT = GENERATE_QUERIES_SYSTEM_PROMPT = """\
+GENERATE_QUERIES_SYSTEM_PROMPT = """\
 Generate 3 diverse search queries to answer the user's question. \
 For each query, assign ALL applicable labels that match the query's topic.
 
-Available labels:
-1. Macroeconomics
-2. Government-Work
-3. Currencies
-4. Energy
-5. Commodities
-6. Agriculture
-7. Livestock
-8. Corporate-Finance
+Available labels: 
+{labels}
 
 IMPORTANT: 
 - A single query can have MULTIPLE labels if it covers multiple topics

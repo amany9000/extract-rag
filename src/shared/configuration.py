@@ -36,13 +36,6 @@ class BaseConfiguration:
         },
     )
 
-    search_kwargs: dict[str, Any] = field(
-        default_factory=dict,
-        metadata={
-            "description": "Additional keyword arguments to pass to the search function of the retriever."
-        },
-    )
-
     @classmethod
     def from_runnable_config(
         cls: Type[T], config: Optional[RunnableConfig] = None

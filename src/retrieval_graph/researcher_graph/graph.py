@@ -3,7 +3,7 @@
 This module defines the core structure and functionality of the researcher graph,
 which is responsible for generating search queries and retrieving relevant documents.
 """
-
+import os
 from typing import TypedDict, cast
 
 from langchain_core.documents import Document
@@ -37,8 +37,13 @@ async def generate_queries(
 
     configuration = AgentConfiguration.from_runnable_config(config)
     model = load_chat_model(configuration.query_model).with_structured_output(Response)
+    
+    labels = os.getenv("LABELS")
+    if not labels:
+        raise ValueError(f"LABELS env var for filtering vectordb retrieval not provided")
+    
     messages = [
-        {"role": "system", "content": configuration.generate_queries_system_prompt},
+        {"role": "system", "content": configuration.generate_queries_system_prompt.format(labels=labels)},
         {"role": "human", "content": state.question},
     ]
     response = cast(Response, await model.ainvoke(messages))
