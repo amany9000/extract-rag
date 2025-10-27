@@ -10,6 +10,8 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.embeddings.fastembed import FastEmbedEmbeddings
 
 
+load_dotenv()
+
 def extract_with_gliner(documents: List[Document]) -> List[Document]:
     from gliner2 import GLiNER2
 
@@ -19,21 +21,15 @@ def extract_with_gliner(documents: List[Document]) -> List[Document]:
     all_labels = []
     no_extraction = 0
     
+    labels =os.getenv("LABELS").split(",")
+    print("labels", labels)
+
     for document in documents:
         labels = extractor.classify_text(
             document.__str__(),
             {
                 "aspects": {
-                    "labels": [
-                        "Macroeconomics", 
-                        "Government-Work",
-                        "Currencies",
-                        "Energy",
-                        "Commodities", 
-                        "Agriculture",
-                        "Livestock",
-                        "Corporate-Finance"
-                    ],
+                    "labels": labels,
                     "multi_label": True,
                     "cls_threshold": 0.5
                 }
@@ -84,7 +80,7 @@ def process_docs(data_dir: str, db_url: str, db_col: str):
     )
 
 
-data_dir = os.getenv("DATA_DIR") or "./docs"
-db_url = os.getenv("QDRANT_URL") or "http://localhost:6333"
-db_col = os.getenv("QDRANT_COL") or "extract-rag.default"
+data_dir = os.getenv("DATA_DIR", "./docs")
+db_url = os.getenv("QDRANT_URL", "http://localhost:6333")
+db_col = os.getenv("QDRANT_COL", "extract-rag.default")
 process_docs(data_dir, db_url, db_col)

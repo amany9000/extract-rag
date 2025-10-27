@@ -6,11 +6,15 @@ from qdrant_client.models import Filter, FieldCondition, MatchAny, PayloadSchema
 from langchain_qdrant import Qdrant
 from langchain_community.embeddings.fastembed import FastEmbedEmbeddings
 from gliner2 import GLiNER2
+from dotenv import load_dotenv
+
+
+load_dotenv()
 
 embedding_model = FastEmbedEmbeddings(model_name=os.getenv("EMBEDDING_MODEL"), threads=4)
 
-client = QdrantClient(url="http://localhost:6333")
-collection = os.getenv("QDRANT_COL") or "extract-rag.default"
+client = QdrantClient(os.getenv("QDRANT_URL", "http://localhost:6333"))
+collection = os.getenv("QDRANT_COL", "extract-rag.default")
 
 client.create_payload_index(
     collection_name=collection,
@@ -42,19 +46,13 @@ print("results without filter", result1, "time elapsed: ", end_time - start_time
 extractor = GLiNER2.from_pretrained("fastino/gliner2-base-v1")
 
 
+labels =os.getenv("LABELS").split(",")
+print("labels", labels)
+
 filter_val = extractor.classify_text(query,
     {
         "aspects": {
-            "labels": [
-                "Macroeconomics", 
-                "Government-Work",
-                "Currencies",
-                "Energy",
-                "Commodities", 
-                "Agriculture",
-                "Livestock",
-                "Corporate-Finance"
-            ],
+            "labels": labels,
             "multi_label": True,
             "cls_threshold": 0.5
         }
