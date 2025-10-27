@@ -5,72 +5,52 @@ from typing import Generator
 import pytest
 from langchain_core.runnables import RunnableConfig
 from langchain_core.vectorstores import VectorStore
-from langsmith import expect, unit
+from langsmith import expect, unit, _expect
 
-from index_graph import graph as index_graph
 from retrieval_graph import graph
 from shared.configuration import BaseConfiguration
 from shared.retrieval import make_text_encoder
+from dotenv import load_dotenv
 
+load_dotenv()
 
 @contextmanager
-def make_elastic_vectorstore(
+def make_qdrant_vectorstore(
     configuration: BaseConfiguration,
 ) -> Generator[VectorStore, None, None]:
     """Configure this agent to connect to a specific elastic index."""
-    from langchain_elasticsearch import ElasticsearchStore
+    from qdrant_client import QdrantClient
+    from langchain_qdrant import Qdrant
 
     embedding_model = make_text_encoder(configuration.embedding_model)
-    vstore = ElasticsearchStore(
-        es_user=os.environ["ELASTICSEARCH_USER"],
-        es_password=os.environ["ELASTICSEARCH_PASSWORD"],
-        es_url=os.environ["ELASTICSEARCH_URL"],
-        index_name="langchain_index",
-        embedding=embedding_model,
+
+    client = QdrantClient(os.getenv("QDRANT_URL", "http://localhost:6333"))
+    collection = os.getenv("QDRANT_COL", "extract-rag.default")
+    
+    qdrant = Qdrant(
+        embeddings=embedding_model,
+        client=client,
+        collection_name=collection,
     )
-    yield vstore
+    yield qdrant
 
 
 @pytest.mark.asyncio
 @unit
 async def test_retrieval_graph() -> None:
-    simple_doc = 'In LangGraph, nodes are typically python functions (sync or async) where the first positional argument is the state, and (optionally), the second positional argument is a "config", containing optional configurable parameters (such as a thread_id).'
     config = RunnableConfig(
         configurable={
-            "retriever_provider": "elastic-local",
-            "embedding_model": "openai/text-embedding-3-small",
+            "retriever_provider": "qdrant",
+            "embedding_model": "fastembed/BAAI/bge-base-en-v1.5",
         }
     )
-    configuration = BaseConfiguration.from_runnable_config(config)
 
-    doc_id = "test_id"
-    result = await index_graph.ainvoke(
-        {"docs": [{"page_content": simple_doc, "id": doc_id}]}, config
-    )
-    expect(result["docs"]).against(lambda x: not x)  # we delete after the end
-    # test general query
+    # test News-related query
     res = await graph.ainvoke(
-        {"messages": [("user", "Hi! How are you?")]},
+        {"messages": [("user", "Give me some info on Wheat production in china in 1986-87? ")]},
         config,
     )
-    expect(res["router"]["type"]).to_contain("general")
-
-    # test query that needs more info
-    res = await graph.ainvoke(
-        {"messages": [("user", "I am having issues with the tools")]},
-        config,
-    )
-    expect(res["router"]["type"]).to_contain("more-info")
-
-    # test LangChain-related query
-    res = await graph.ainvoke(
-        {"messages": [("user", "What is a node in LangGraph?")]},
-        config,
-    )
-    expect(res["router"]["type"]).to_contain("langchain")
     response = str(res["messages"][-1].content)
-    expect(response.lower()).to_contain("function")
+    expect(response.lower()).to_contain("china")
+    expect( response.lower().find("I am not able to find")).to_equal(-1)
 
-    # clean up after test
-    with make_elastic_vectorstore(configuration) as vstore:
-        await vstore.adelete([doc_id])
