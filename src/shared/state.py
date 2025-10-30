@@ -69,7 +69,7 @@ def reduce_docs(
                 item_id = item.metadata.get("uuid", "")
                 if not item_id:
                     item_id = _generate_uuid(item.page_content)
-                    new_item = item.copy(deep=True)
+                    new_item = item.model_copy(deep=True)
                     new_item.metadata["uuid"] = item_id
                 else:
                     new_item = item
