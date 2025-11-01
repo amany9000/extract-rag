@@ -1,10 +1,12 @@
 
 import os
-from dotenv import load_dotenv
+from typing import List
 from pathlib import Path
+from dotenv import load_dotenv
 
 from langchain_qdrant import Qdrant
-from typing import List
+from qdrant_client import QdrantClient
+from qdrant_client.models import PayloadSchemaType, VectorParams, Distance
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.embeddings.fastembed import FastEmbedEmbeddings
@@ -21,21 +23,22 @@ def extract_with_gliner(documents: List[Document]) -> List[Document]:
     all_labels = []
     no_extraction = 0
     
-    labels =os.getenv("LABELS").split(",")
-    print("labels", labels)
+    all_label_texts =os.getenv("LABELS").split(",")
 
+    print("all_labels", all_labels)
     for document in documents:
+        print("Document beforeeeeeeeeeeeeee", document.page_content)
         labels = extractor.classify_text(
-            document.__str__(),
+            document.page_content,
             {
                 "aspects": {
-                    "labels": labels,
+                    "labels": all_label_texts,
                     "multi_label": True,
                     "cls_threshold": 0.5
                 }
             }
         )["aspects"]
-        document.metadata["filter"] = labels
+        document.metadata["filter"] = labels[:4]
         print("Document After", document)
         print("labels", labels, "\n**************************************************************************\\n")
 
@@ -47,12 +50,33 @@ def extract_with_gliner(documents: List[Document]) -> List[Document]:
                     seen.add(x)
                     all_labels.append(x)
     
-    print("results", all_labels, "no_extraction", no_extraction)  
+    print("all labels used", all_labels, "no_extraction", no_extraction)  
     return documents
 
 
 def process_docs(data_dir: str, db_url: str, db_col: str):
     embeddings = FastEmbedEmbeddings(model_name=os.getenv("EMBEDDING_MODEL"), threads=4)
+
+    client = QdrantClient(url=db_url)
+    
+    client.create_collection(
+        collection_name=db_col,
+        vectors_config=VectorParams(size=384, distance=Distance.COSINE)
+    )
+
+    
+    client.create_payload_index(
+        collection_name=db_col,
+        field_name="metadata.filter",
+        field_schema=PayloadSchemaType.KEYWORD
+    )
+
+    qdrant = Qdrant(
+        embeddings=embeddings,
+        client=client,
+        collection_name=db_col,
+    )
+    
     recursive_splitter = RecursiveCharacterTextSplitter(
         chunk_size=2048,
         chunk_overlap=128,
@@ -71,12 +95,8 @@ def process_docs(data_dir: str, db_url: str, db_col: str):
     extract_with_gliner(documents)
     print("extraction done", documents[1:5])
 
-    Qdrant.from_documents(
+    qdrant.add_documents(
         documents=documents,
-        embedding=embeddings,
-        url=db_url,
-        collection_name=db_col,
-        force_recreate=True
     )
 
 

@@ -2,7 +2,7 @@
 import os
 import time
 from qdrant_client import QdrantClient
-from qdrant_client.models import Filter, FieldCondition, MatchAny, PayloadSchemaType, MatchValue
+from qdrant_client.models import Filter, FieldCondition, MatchValue
 from langchain_qdrant import Qdrant
 from langchain_community.embeddings.fastembed import FastEmbedEmbeddings
 from gliner2 import GLiNER2
@@ -15,12 +15,6 @@ embedding_model = FastEmbedEmbeddings(model_name=os.getenv("EMBEDDING_MODEL"), t
 
 client = QdrantClient(os.getenv("QDRANT_URL", "http://localhost:6333"))
 collection = os.getenv("QDRANT_COL", "extract-rag.default")
-
-client.create_payload_index(
-    collection_name=collection,
-    field_name="metadata.filter",
-    field_schema=PayloadSchemaType.KEYWORD
-)
 
 qdrant = Qdrant(
     embeddings=embedding_model,
@@ -47,7 +41,6 @@ extractor = GLiNER2.from_pretrained("fastino/gliner2-base-v1")
 
 
 labels =os.getenv("LABELS").split(",")
-print("labels", labels)
 
 filter_val = extractor.classify_text(query,
     {
