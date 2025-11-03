@@ -56,7 +56,6 @@ async def respond(
     context = format_docs(state.documents)
     prompt = configuration.response_system_prompt.format(documents=context)
     messages = [{"role": "system", "content": prompt}] + state.messages
-    print("responsd.messaages", messages)
     response = await model.ainvoke(messages)
     return {"messages": [response]}
 
