@@ -64,7 +64,6 @@ def process_docs(data_dir: str, db_url: str, db_col: str):
         vectors_config=VectorParams(size=384, distance=Distance.COSINE)
     )
 
-    
     client.create_payload_index(
         collection_name=db_col,
         field_name="metadata.filter",
@@ -98,7 +97,9 @@ def process_docs(data_dir: str, db_url: str, db_col: str):
     qdrant.add_documents(
         documents=documents,
     )
-
+    
+    collection_info = client.get_collection(collection_name=db_col)
+    print(f"Collection InFO: {collection_info}")
 
 data_dir = os.getenv("DATA_DIR", "./docs")
 db_url = os.getenv("QDRANT_URL", "http://localhost:6333")

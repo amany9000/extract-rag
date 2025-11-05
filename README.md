@@ -42,7 +42,6 @@ cp .env.example .env
 docker run -p 6333:6333 -p 6334:6334 -v $(pwd)/qdrant_storage:/qdrant/storage:z qdrant/qdrant 
 ```
 Qdrant is a fast vectordb. It has an extensive support for metadata filtering.
-To start a Docker container for Qdrant run:
 
 3. Install Dependencies:
 
