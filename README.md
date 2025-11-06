@@ -55,6 +55,15 @@ uv run python ingestor.py
 ```
 The documents in `./docs` are processed versions of the .sgm files of the [Reuters-21578](https://kdd.ics.uci.edu/databases/reuters21578/reuters21578.html) text categorization data collection.
 
+The processing is done using `doc_processor.py`.
+
+#### If you want to add more docs: 
+Then run the processor script:
+```
+uv run python doc_processor.py
+```
+Make sure to provide the right `.sgm` file here.
+
 5. Start Langsmith Studio:
 ```
 uv run langgraph dev --allow-blocking
