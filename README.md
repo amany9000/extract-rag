@@ -2,13 +2,13 @@
 
 [![Open in - LangGraph Studio](https://img.shields.io/badge/Open_in-LangGraph_Studio-00324d.svg?logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4NS4zMzMiIGhlaWdodD0iODUuMzMzIiB2ZXJzaW9uPSIxLjAiIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHBhdGggZD0iTTEzIDcuOGMtNi4zIDMuMS03LjEgNi4zLTYuOCAyNS43LjQgMjQuNi4zIDI0LjUgMjUuOSAyNC41QzU3LjUgNTggNTggNTcuNSA1OCAzMi4zIDU4IDcuMyA1Ni43IDYgMzIgNmMtMTIuOCAwLTE2LjEuMy0xOSAxLjhtMzcuNiAxNi42YzIuOCAyLjggMy40IDQuMiAzLjQgNy42cy0uNiA0LjgtMy40IDcuNkw0Ny4yIDQzSDE2LjhsLTMuNC0zLjRjLTQuOC00LjgtNC44LTEwLjQgMC0xNS4ybDMuNC0zLjRoMzAuNHoiLz48cGF0aCBkPSJNMTguOSAyNS42Yy0xLjEgMS4zLTEgMS43LjQgMi41LjkuNiAxLjcgMS44IDEuNyAyLjcgMCAxIC43IDIuOCAxLjYgNC4xIDEuNCAxLjkgMS40IDIuNS4zIDMuMi0xIC42LS42LjkgMS40LjkgMS41IDAgMi43LS41IDIuNy0xIDAtLjYgMS4xLS44IDIuNi0uNGwyLjYuNy0xLjgtMi45Yy01LjktOS4zLTkuNC0xMi4zLTExLjUtOS44TTM5IDI2YzAgMS4xLS45IDIuNS0yIDMuMi0yLjQgMS41LTIuNiAzLjQtLjUgNC4yLjguMyAyIDEuNyAyLjUgMy4xLjYgMS41IDEuNCAyLjMgMiAyIDEuNS0uOSAxLjItMy41LS40LTMuNS0yLjEgMC0yLjgtMi44LS44LTMuMyAxLjYtLjQgMS42LS41IDAtLjYtMS4xLS4xLTEuNS0uNi0xLjItMS42LjctMS43IDMuMy0yLjEgMy41LS41LjEuNS4yIDEuNi4zIDIuMiAwIC43LjkgMS40IDEuOSAxLjYgMi4xLjQgMi4zLTIuMy4yLTMuMi0uOC0uMy0yLTEuNy0yLjUtMy4xLTEuMS0zLTMtMy4zLTMtLjUiLz48L3N2Zz4=)](https://langgraph-studio.vercel.app/templates/open?githubUrl=https://github.com/amany9000/extract-rag)
 
-This is a starter project to help you get started with developing a GLiNER-based Metadata-Filtered RAG Research agent using [LangGraph](https://github.com/langchain-ai/langgraph) in [LangSmith Studio](https://docs.langchain.com/oss/python/langgraph/studio).
+This is a starter project to help you get started with developing a GLiNER2-based Metadata-Filtered RAG Research Agent using [LangGraph](https://github.com/langchain-ai/langgraph) in [LangSmith Studio](https://docs.langchain.com/oss/python/langgraph/studio).
 
-* [GLiNER](https://github.com/fastino-ai/GLiNER2) is an efficient model used for Named Entity Recognition(NER), Classification and Extraction. It has excellent support for CPU.
+* [GLiNER2](https://github.com/fastino-ai/GLiNER2) is an efficient model used for Named Entity Recognition(NER), Classification and Extraction. It has excellent support for CPU.
 
-* Since using LLMs to filter unstructured data (Articles, Legal Docs, Reports etc) can be very costly, GLiNER-based Filtered RAG pipeline provide an efficient and robust solution.
+* Since using LLMs to filter unstructured data (Articles, Legal Docs, Reports etc) can be very costly, GLiNER2-based Filtered RAG pipeline provide an efficient and robust solution.
 
-* In `ingestor.py`, the data is first chunked into LangChain Documents, these documents are then classified using GLiNER, the classified labels are stored in the document's metadata and then finally document indexing in the VectorDB is performed.
+* In `ingestor.py`, the data is first chunked into LangChain Documents, these documents are then classified using GLiNER2, the classified labels are stored in the document's metadata and then finally document indexing in the VectorDB is performed.
 
 * At the time of retrieval, the LLM sends back multiple (default 3) queries and their corresponding filters(if any), which are then used to retrieve data from the VectorDB.
 
