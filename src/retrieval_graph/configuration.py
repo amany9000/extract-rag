@@ -16,14 +16,14 @@ class AgentConfiguration(BaseConfiguration):
     # models
 
     query_model: Annotated[str, {"__template_metadata__": {"kind": "llm"}}] = field(
-        default="google_genai/gemini-2.0-flash-lite",
+        default="google_genai/gemini-2.5-flash-lite",
         metadata={
             "description": "The language model used for processing and refining queries. Should be in the form: provider/model-name."
         },
     )
 
     response_model: Annotated[str, {"__template_metadata__": {"kind": "llm"}}] = field(
-        default="google_genai/gemini-2.0-flash-lite",
+        default="google_genai/gemini-2.5-flash-lite",
         metadata={
             "description": "The language model used for generating responses. Should be in the form: provider/model-name."
         },
