@@ -22,6 +22,7 @@ dependencies = [
     "langchain-experimental>=0.4.0",
     "fastembed>=0.7.3",
     "qdrant-client==1.15.1",
+    "langchain-aws>=0.2.6",
     "gliner2>=1.0.2",
     "pytest-asyncio>=1.3.0",
     "bs4>=0.0.2",

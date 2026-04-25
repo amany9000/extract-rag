@@ -16,16 +16,16 @@ class AgentConfiguration(BaseConfiguration):
     # models
 
     query_model: Annotated[str, {"__template_metadata__": {"kind": "llm"}}] = field(
-        default="google_genai/gemini-2.0-flash-lite",
+        default="bedrock_converse/google.gemma-3-27b-it",
         metadata={
-            "description": "The language model used for processing and refining queries. Should be in the form: provider/model-name."
+            "description": "Model used for query generation. Format: 'provider/model-id'. Examples: 'bedrock_converse/us.anthropic.claude-3-5-haiku-20241022-v1:0', 'bedrock_converse/us.amazon.nova-lite-v1:0', 'google_genai/gemini-2.5-flash-lite'."
         },
     )
 
     response_model: Annotated[str, {"__template_metadata__": {"kind": "llm"}}] = field(
-        default="google_genai/gemini-2.0-flash-lite",
+        default="bedrock_converse/google.gemma-3-27b-it",
         metadata={
-            "description": "The language model used for generating responses. Should be in the form: provider/model-name."
+            "description": "Model used for generating responses. Format: 'provider/model-id'. Examples: 'bedrock_converse/us.anthropic.claude-3-5-sonnet-20241022-v2:0', 'bedrock_converse/us.amazon.nova-pro-v1:0', 'google_genai/gemini-2.5-flash'."
         },
     )
 

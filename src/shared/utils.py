@@ -63,15 +63,30 @@ def format_docs(docs: Optional[list[Document]]) -> str:
 </documents>"""
 
 
-def load_chat_model(fully_specified_name: str) -> BaseChatModel:
+def load_chat_model(
+    fully_specified_name: str, *, provider: Optional[str] = None
+) -> BaseChatModel:
     """Load a chat model from a fully specified name.
 
     Args:
-        fully_specified_name (str): String in the format 'provider/model'.
+        fully_specified_name: Either a bare model id (e.g. ``"gemini-2.5-flash-lite"``)
+            or a ``"provider/model"`` string. If ``provider`` is given, it
+            overrides any provider prefix.
+        provider: Optional provider name (e.g. ``"google_genai"`` or
+            ``"bedrock_converse"``). When set, ``fully_specified_name`` is
+            treated as the model id only.
+
+    Notes:
+        For ``bedrock_converse``, ``boto3`` automatically picks up
+        ``AWS_BEARER_TOKEN_BEDROCK`` (and standard AWS credential env vars)
+        from the environment.
     """
-    if "/" in fully_specified_name:
+    if provider is None and "/" in fully_specified_name:
         provider, model = fully_specified_name.split("/", maxsplit=1)
     else:
-        provider = ""
         model = fully_specified_name
-    return init_chat_model(model, model_provider=provider)
+    
+    if provider == "bedrock_converse":
+        # Bedrock models require the provider to be specified as a parameter to the model loader, and won't work if the provider is included in the model name.
+        return init_chat_model(model, model_provider=provider, region_name="us-east-1")
+    return init_chat_model(model, model_provider=provider or None)

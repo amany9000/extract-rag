@@ -47,6 +47,10 @@ async def generate_queries(
         {"role": "human", "content": state.question},
     ]
     response = cast(Response, await model.ainvoke(messages))
+    if not response or not response.get("queries"):
+        print("responseresponseresponse", response)
+        return {"queries": [{"text": state.question, "filters": []}]}
+    print("responseresponseresponsetrue", response)
     return {"queries": response["queries"]}
 
 
