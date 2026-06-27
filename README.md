@@ -39,7 +39,7 @@ cp .env.example .env
 
 2. Setup [Qdrant](https://github.com/qdrant/qdrant):
 ```
-docker run -p 6333:6333 -p 6334:6334 -v $(pwd)/qdrant_storage:/qdrant/storage:z qdrant/qdrant 
+docker run -dp 6333:6333 -p 6334:6334 -v $(pwd)/qdrant_storage:/qdrant/storage:z qdrant/qdrant 
 ```
 Qdrant is a fast vectordb. It has an extensive support for metadata filtering.
 

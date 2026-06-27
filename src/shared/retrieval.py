@@ -77,6 +77,33 @@ def make_qdrant_retriever(
         )
 
 @contextmanager
+def make_lancedb_retriever(
+    embedding_model: Embeddings,
+    filters: List[str] | None
+) -> Generator[VectorStoreRetriever, None, None]:
+    """Configure this agent to connect to a specific LanceDB store."""
+    from langchain_lancedb import LanceDB
+
+    uri = os.getenv("LANCEDB_URI", "./.rag_cache/db/lancedb")
+
+    vector_store = LanceDB(
+        embedding_function=embedding_model,
+        uri=uri,
+    )
+    # Open the existing table (created during ingestion)
+    vector_store._get_or_create_table()
+
+    if filters:
+        yield vector_store.as_retriever(
+            search_type="similarity", search_kwargs={"k": 4}
+        )
+    else:
+        yield vector_store.as_retriever(
+            search_type="similarity", search_kwargs={"k": 4}
+        )
+
+
+@contextmanager
 def make_retriever(
     filters: List[str] | None, 
     config: RunnableConfig,
@@ -87,6 +114,10 @@ def make_retriever(
     match configuration.retriever_provider:
         case "qdrant":
             with make_qdrant_retriever(embedding_model, filters) as retriever:
+                yield retriever
+
+        case "lancedb":
+            with make_lancedb_retriever(embedding_model, filters) as retriever:
                 yield retriever
 
         case _:

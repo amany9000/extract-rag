@@ -1,12 +1,8 @@
-
 import os
 from typing import List
 from pathlib import Path
 from dotenv import load_dotenv
 
-from langchain_qdrant import Qdrant
-from qdrant_client import QdrantClient
-from qdrant_client.models import PayloadSchemaType, VectorParams, Distance
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.embeddings.fastembed import FastEmbedEmbeddings
@@ -54,28 +50,9 @@ def extract_with_gliner(documents: List[Document]) -> List[Document]:
     return documents
 
 
-def process_docs(data_dir: str, db_url: str, db_col: str):
+def process_docs(data_dir: str, vector_db: str):
     embeddings = FastEmbedEmbeddings(model_name=os.getenv("EMBEDDING_MODEL"), threads=4)
 
-    client = QdrantClient(url=db_url)
-    
-    client.create_collection(
-        collection_name=db_col,
-        vectors_config=VectorParams(size=384, distance=Distance.COSINE)
-    )
-
-    client.create_payload_index(
-        collection_name=db_col,
-        field_name="metadata.filter",
-        field_schema=PayloadSchemaType.KEYWORD
-    )
-
-    qdrant = Qdrant(
-        embeddings=embeddings,
-        client=client,
-        collection_name=db_col,
-    )
-    
     recursive_splitter = RecursiveCharacterTextSplitter(
         chunk_size=2048,
         chunk_overlap=128,
@@ -94,14 +71,50 @@ def process_docs(data_dir: str, db_url: str, db_col: str):
     extract_with_gliner(documents)
     print("extraction done", documents[1:5])
 
-    qdrant.add_documents(
-        documents=documents,
-    )
-    
-    collection_info = client.get_collection(collection_name=db_col)
-    print(f"Collection InFO: {collection_info}")
+    if vector_db == "lancedb":
+        from langchain_lancedb import LanceDB
+
+        lancedb_uri = os.getenv("LANCEDB_URI", "./.rag_cache/db/lancedb")
+        vector_store = LanceDB(
+            embedding_function=embeddings,
+            uri=lancedb_uri,
+        )
+        vector_store.add_documents(documents=documents)
+        print(f"Documents added to LanceDB at: {lancedb_uri}")
+    else:
+        from langchain_qdrant import Qdrant
+        from qdrant_client import QdrantClient
+        from qdrant_client.models import PayloadSchemaType, VectorParams, Distance
+
+        db_url = os.getenv("QDRANT_URL", "http://localhost:6333")
+        db_col = os.getenv("QDRANT_COL", "extract-rag.default")
+
+        client = QdrantClient(url=db_url)
+        
+        client.create_collection(
+            collection_name=db_col,
+            vectors_config=VectorParams(size=384, distance=Distance.COSINE)
+        )
+
+        client.create_payload_index(
+            collection_name=db_col,
+            field_name="metadata.filter",
+            field_schema=PayloadSchemaType.KEYWORD
+        )
+
+        qdrant = Qdrant(
+            embeddings=embeddings,
+            client=client,
+            collection_name=db_col,
+        )
+
+        qdrant.add_documents(
+            documents=documents,
+        )
+        
+        collection_info = client.get_collection(collection_name=db_col)
+        print(f"Collection InFO: {collection_info}")
 
 data_dir = os.getenv("DATA_DIR", "./docs")
-db_url = os.getenv("QDRANT_URL", "http://localhost:6333")
-db_col = os.getenv("QDRANT_COL", "extract-rag.default")
-process_docs(data_dir, db_url, db_col)
+vector_db = os.getenv("VECTOR_DB", "qdrant")
+process_docs(data_dir, vector_db)

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass, field, fields
 from typing import Annotated, Any, Literal, Optional, Type, TypeVar
 
@@ -27,12 +28,12 @@ class BaseConfiguration:
     )
 
     retriever_provider: Annotated[
-        Literal["qdrant"],
+        Literal["qdrant", "lancedb"],
         {"__template_metadata__": {"kind": "retriever"}},
     ] = field(
-        default="qdrant",
+        default_factory=lambda: os.getenv("VECTOR_DB", "qdrant"),
         metadata={
-            "description": "The vector store provider to use for retrieval. Options are 'qdrant'."
+            "description": "The vector store provider to use for retrieval. Options are 'qdrant', 'lancedb'."
         },
     )
 
