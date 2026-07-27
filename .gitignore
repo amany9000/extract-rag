@@ -169,3 +169,6 @@ uv.lock
 # Qdrant Disk storage
 db_docs
 qdrant_storage/
+
+# Lancedb
+.rag_cache

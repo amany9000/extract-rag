@@ -90,6 +90,21 @@ To use Google Gemini's chat models:
 GOOGLE_API_KEY=your-api-key
 ```
 
+#### AWS Bedrock
+
+The chat model provider is chosen with `LLM_PROVIDER` (`gemini` or `bedrock`, default `gemini`). To use Bedrock:
+
+1. Create an [Amazon Bedrock API key](https://docs.aws.amazon.com/bedrock/latest/userguide/api-keys.html) and make sure the model you want is enabled in your region.
+2. Add it to your `.env` file:
+```
+LLM_PROVIDER=bedrock
+AWS_BEARER_TOKEN_BEDROCK=your-bedrock-api-key
+AWS_REGION=us-east-1
+BEDROCK_MODEL=us.anthropic.claude-haiku-4-5-20251001-v1:0
+```
+
+`query_model` / `response_model` can still be overridden per run (e.g. `bedrock_converse/<model-id>`).
+
 ### Setup Embedding Model
 
 The default values for `embedding_model` are shown below:

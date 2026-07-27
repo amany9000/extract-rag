@@ -66,7 +66,7 @@ async def retrieve_documents(
     """
     with retrieval.make_retriever(state.query['filters'], config) as retriever:
         response = await retriever.ainvoke(state.query['text'], config)
-        print("state.query retrieve_documents", state.query, "\n")
+        print("state.query retrieve_documents", state.query, "\n", response)
         return {"documents": response}
 
 
